@@ -8,3 +8,5 @@ config/*credentials.json
 /log
 .#*
 /doc/
+.idea/
+*.iml

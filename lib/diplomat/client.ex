@@ -1,6 +1,20 @@
 defmodule Diplomat.Client do
   @api_version "v1beta3"
 
+  @pool_name :datastore_http_connection_pool
+  @pool_options max_connections: Application.get_env(:diplomat, :pool_max_connections, 20),
+                timeout: Application.get_env(:diplomat, :pool_timeout, 10_000)
+
+  @hackney_opts hackney: [pool: @pool_name]
+
+  def start_pool do
+    :ok = :hackney_pool.start_pool(@pool_name, @pool_options)
+  end
+
+  def stop_pool do
+    :ok = :hackney_pool.stop_pool(@pool_name)
+  end
+
   def allocate_ids(req) do
     req
     |> Diplomat.Proto.AllocateIdsRequest.encode
@@ -79,7 +93,7 @@ defmodule Diplomat.Client do
 
   defp call(data, method) do
     url(method)
-    |> HTTPoison.post(data, [auth_header, proto_header])
+    |> HTTPoison.post(data, [auth_header, proto_header], @hackney_opts)
     |> case do
       {:ok, %{body: body, status_code: code}} when code in 200..299 ->
         {:ok, body}
