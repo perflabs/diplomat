@@ -12,8 +12,8 @@ defmodule Diplomat do
     use Protobuf, from: Path.expand("datastore_v1beta3.proto", __DIR__), doc: false
   end
 
-  @spec start() :: :ok
-  def start() do
+  @spec start(Application.app, Application.start_type) :: :ok | {:error, term}
+  def start(_type \\ :normal, _args \\ []) do
     Diplomat.Client.start_pool()
     :ok
   end
