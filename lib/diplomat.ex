@@ -15,6 +15,5 @@ defmodule Diplomat do
   @spec start(Application.app, Application.start_type) :: :ok | {:error, term}
   def start(_type \\ :normal, _args \\ []) do
     Diplomat.Client.start_pool()
-    :ok
   end
 end
